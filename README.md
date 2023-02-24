@@ -1,2 +1,2 @@
 # gunes-enerjisi-sistemleri
-- not1
+- beltek ders notları eklendi
