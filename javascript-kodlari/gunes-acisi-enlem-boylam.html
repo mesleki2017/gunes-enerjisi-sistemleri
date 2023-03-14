@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.7.12/two.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>acihesap</title>
+    <script src="script.js" defer></script>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+	  <input id="enlem"  placeholder="enlem" />
+	  <input id="boylam"  placeholder="boylam" />
+	  <input id="sepha" placeholder="sepha boyu"/>
+	  <button onclick="myFunction()">Hesapla</button>
+	  
+	 <div>
+	  <span>Sephalar arası açıklık = </span>
+	  <span id="sonuc"> </span>
+	</div>
+	 <div>
+	  <span>21 Aralık 12:00 Güneş Açısı = </span>
+	  <span id="sonuc1"> </span>
+	</div>
+	  <span>Sepha eğimi = </span>
+	  <span id="sonuc2"> </span>
+	</div>
+	
+    <div style="width: 800px;border: 5px outset red;" id="myid1">
+	</div>
+  </body>
+</html>
+
+<script>
+//https://cdnjs.com/libraries/suncalc	
+
+function degToRad(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+const main=document.getElementById("myid1");
+var two = new Two({
+	  width: 800,
+		height: 600,
+      });
+two.appendTo(main);
+two.renderer.domElement.style.background = '#afefef';
+
+      
+function myFunction(){
+
+
+const mydate = new Date("2022-12-21 12:00:00");
+var enlem=document.getElementById("enlem").value
+var boylam=document.getElementById("boylam").value;
+var sunrisePos = SunCalc.getPosition(mydate, enlem, boylam);
+var sunAltitude = sunrisePos.altitude*180/Math.PI;
+
+const aci1=enlem;
+const aci2=sunAltitude;
+const sepha=document.getElementById("sepha").value;
+
+
+var hip1=Math.sin(degToRad(aci1))*sepha
+var aaa=Math.cos(degToRad(aci1))*sepha
+var bbb=hip1/Math.tan(degToRad(aci2))
+var ccc=aaa+bbb;
+console.log(aaa+bbb)
+
+var span = document.getElementById("sonuc");
+span.textContent = aaa+bbb;
+
+var span1 = document.getElementById("sonuc1");
+span1.textContent = sunAltitude;
+
+var span2 = document.getElementById("sonuc2");
+span2.textContent = aci1;
+
+var myscale=50;
+var yoffset=300;
+var xoffset=40;
+
+
+
+var line1 = two.makeLine(xoffset,yoffset,xoffset+ccc*myscale,yoffset);
+line1.linewidth = 10;
+line1.stroke = "rgba(255, 0, 0, 0.5)";
+
+var styles = {
+  alignment: "center",
+  size: 18,
+  family: "Lato"
+};
+two.makeText(ccc,(xoffset+ccc*myscale)/2,yoffset,styles)
+
+
+var line2 = two.makeLine(xoffset,yoffset,xoffset+aaa*myscale,yoffset-hip1*myscale);
+line2.linewidth = 10;
+line2.stroke = "rgba(0, 255, 0, 0.5)";
+
+var styles1 = {
+  alignment: "center",
+  size: 18,
+  family: "Lato"
+};
+two.makeText(sepha,(xoffset+aaa*myscale)/2,yoffset-hip1*myscale/2,styles1)
+
+var line3 = two.makeLine(xoffset+aaa*myscale,yoffset-hip1*myscale,xoffset+ccc*myscale,yoffset);
+line3.linewidth = 10;
+line3.stroke = "rgba(0, 0, 255, 0.5)";
+
+two.update();
+
+
+}
+
+</script>
