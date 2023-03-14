@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.7.12/two.js"></script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>acihesap</title>
+    <script src="script.js" defer></script>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+	  <input id="aci1"  placeholder="açı1" />
+	  <input id="aci2"  placeholder="açı2" />
+	  <input id="sepha" placeholder="sepha boyu"/>
+	  <button onclick="myFunction()">Hesapla</button>
+	  <p>Sephalar arası açıklık = </p>
+	  <div id="sonuc"> </div>
+
+    <div style="width: 800px;border: 5px outset red;" id="myid1">
+	</div>
+  </body>
+</html>
+
+<script>
+	
+function degToRad(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+const main=document.getElementById("myid1");
+var two = new Two({
+	  width: 800,
+		height: 600,
+      });
+two.appendTo(main);
+two.renderer.domElement.style.background = '#afefef';
+const styles = {
+  size: radius * 0.33,
+  weight: 'bold',
+  family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+  fill: 'black',
+  opacity: 0.33
+};
+      
+function myFunction(){
+const aci1=document.getElementById("aci1").value;
+const aci2=document.getElementById("aci2").value;
+const sepha=document.getElementById("sepha").value;
+
+var hip1=Math.sin(degToRad(aci1))*sepha
+var aaa=Math.cos(degToRad(aci1))*sepha
+var bbb=hip1/Math.tan(degToRad(aci2))
+var ccc=aaa+bbb;
+console.log(aaa+bbb)
+var span = document.getElementById("sonuc");
+span.textContent = aaa+bbb;
+
+
+var myscale=50;
+var yoffset=300;
+var xoffset=40;
+
+
+
+var line1 = two.makeLine(xoffset,yoffset,xoffset+ccc*myscale,yoffset);
+line1.linewidth = 10;
+line1.stroke = "rgba(255, 0, 0, 0.5)";
+
+two.makeText(ccc,(xoffset+ccc*myscale)/2,yoffset)
+
+var line2 = two.makeLine(xoffset,yoffset,xoffset+aaa*myscale,yoffset-hip1*myscale);
+line2.linewidth = 10;
+line2.stroke = "rgba(25, 100, 0, 0.5)";
+
+var line3 = two.makeLine(xoffset+aaa*myscale,yoffset-hip1*myscale,xoffset+ccc*myscale,yoffset);
+line3.linewidth = 10;
+line3.stroke = "rgba(25, 5, 200, 0.5)";
+
+two.update();
+
+
+}
+
+</script>

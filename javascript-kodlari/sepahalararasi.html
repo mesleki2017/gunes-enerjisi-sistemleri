@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+    <script src="script.js" defer></script>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+	  <input id="aci1"  placeholder="açı1" />
+	  <input id="aci2"  placeholder="açı2" />
+	  <input id="sepha" placeholder="sepha boyu"/>
+	  <button onclick="myFunction()">Hesapla</button>
+	  <p>Sephalar arası açıklık = </p>
+	  <div id="sonuc"> </div>
+
+    <canvas class="myCanvas">
+      <p>Add suitable fallback here.</p>
+    </canvas>
+  </body>
+</html>
+
+<script>
+	
+function degToRad(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+
+
+function myFunction(){
+
+
+const canvas = document.querySelector('.myCanvas');
+const width = canvas.width = window.innerWidth;
+const height = canvas.height = window.innerHeight;
+const ctx = canvas.getContext('2d');
+
+
+const aci1=document.getElementById("aci1").value;
+const aci2=document.getElementById("aci2").value;
+const sepha=document.getElementById("sepha").value;
+
+
+var hip1=Math.sin(degToRad(aci1))*sepha
+var aaa=Math.cos(degToRad(aci1))*sepha
+var bbb=hip1/Math.tan(degToRad(aci2))
+console.log(aaa+bbb)
+var span = document.getElementById("sonuc");
+span.textContent = aaa+bbb;
+
+}
+
+</script>
