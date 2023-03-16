@@ -59,6 +59,7 @@ var enlem=document.getElementById("enlem").value
 var boylam=document.getElementById("boylam").value;
 var sunrisePos = SunCalc.getPosition(mydate, enlem, boylam);
 var sunAltitude = sunrisePos.altitude*180/Math.PI;
+console.log(sunAltitude)
 
 const aci1=enlem;
 const aci2=sunAltitude;
@@ -69,7 +70,7 @@ var hip1=Math.sin(degToRad(aci1))*sepha
 var aaa=Math.cos(degToRad(aci1))*sepha
 var bbb=hip1/Math.tan(degToRad(aci2))
 var ccc=aaa+bbb;
-console.log(aaa+bbb)
+
 
 var span = document.getElementById("sonuc");
 span.textContent = aaa+bbb;
