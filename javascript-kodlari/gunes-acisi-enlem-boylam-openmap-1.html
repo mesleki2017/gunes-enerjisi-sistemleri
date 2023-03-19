@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<title>OpenLayers Simplest Example</title>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+<link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
+
+ <body>
+
+    <h1>Güneş Açısı Hesapla</h1>
+    <p>Konum Bilgisi:</p>
+    <label>Enlem:</label> <input type="text" id="latitude"><br>
+    <label>Boylam:</label> <input type="text" id="longitude"><br>
+    <button onclick="getLocation()">Şuanki konumu al</button>
+    <p>Tarih ve Saat Bilgisi:</p>
+    <label>Tarih:</label> <input type="date" id="date"><br>
+    <label>Saat:</label> <input type="time" id="time"><br>
+    <br>
+    <button onclick="calculateSunAngle()">Hesapla</button>
+    <br>
+    <br>
+    <div id="result"></div>
+<div id="osm-map"></div>
+ </body>
+ </html>
+<script>
+// 39.9508434082744, 32.89822335360895
+// Where you want to render the map.
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+    
+  } 
+}
+
+function showPosition(position) {
+console.log(position.coords.latitude);
+document.getElementById("latitude").value=position.coords.latitude;
+document.getElementById("longitude").value=position.coords.longitude;
+}
+var element = document.getElementById('osm-map');
+
+// Height has to be set. You can do this in CSS too.
+element.style = 'height:300px;';
+
+// Create Leaflet map on map element.
+var map = L.map(element);
+
+function calculateSunAngle() {
+	  var latitude = parseFloat(document.getElementById("latitude").value);
+	  var longitude = parseFloat(document.getElementById("longitude").value);
+	  var date = new Date(document.getElementById("date").value + "T" + document.getElementById("time").value + ":00");
+	  
+	  var sunPosition = SunCalc.getPosition(date, latitude, longitude);
+	  var altitude = sunPosition.altitude * 180 / Math.PI;
+	  var azimuth = sunPosition.azimuth * 180 / Math.PI;
+	  
+	  var resultDiv = document.getElementById("result");
+	  resultDiv.innerHTML = "Güneş Açısı: " + altitude.toFixed(2) + " derece";
+
+
+// Add OSM tile layer to the Leaflet map.
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// Target's GPS coordinates.
+var target = L.latLng(latitude, longitude);
+var target2 = L.latLng(32, 32);
+// Set map's center to target with zoom 14.
+map.setView(target, 20);
+
+// Place a marker on the same location.
+L.marker(target).addTo(map);
+
+var ddd1=[latitude, longitude]
+var ddd2=[latitude+Math.sin(azimuth), longitude+Math.cos(azimuth)]
+var firstpolyline =L.polyline([ddd1,ddd2],{
+    color: 'red',
+    weight: 3,
+    opacity: 0.5,
+    smoothFactor: 1
+});
+firstpolyline.addTo(map);
+
+}
+ </script>
+
