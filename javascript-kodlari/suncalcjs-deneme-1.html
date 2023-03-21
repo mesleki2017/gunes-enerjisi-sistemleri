@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<title>OpenLayers Simplest Example</title>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+<script src="https://unpkg.com/moment"></script>
+<link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
+
+ <body>
+
+    <h1>Güneş Açısı Hesapla</h1>
+    <p>Konum Bilgisi:</p>
+    <label>Enlem:</label> <input type="text" id="latitude"><br>
+    <label>Boylam:</label> <input type="text" id="longitude"><br>
+    <button onclick="getLocation()">Şuanki konumu al</button>
+    <p>Tarih ve Saat Bilgisi:</p>
+    <label>Tarih:</label> <input type="date" id="date"><br>
+    <label>Saat:</label> <input type="time" id="time" value="12:00"><br>
+    <br>
+    <button onclick="calculateSunAngle()">Hesapla</button>
+    <br>
+    <br>
+    <div id="result"></div>
+    <div id="result2"></div>
+ </body>
+ </html>
+<script>
+//http://worldtimeapi.org/api/timezone/Europe/Istanbul
+// 39.9508434082744, 32.89822335360895
+// Where you want to render the map.
+	  var currentDate = new Date();
+	  console.log(currentDate);
+	  var utc = currentDate.getTime() + (currentDate.getTimezoneOffset() * 60000);
+	  console.log(currentDate.getTimezoneOffset());
+	  if (currentDate.getTimezoneOffset()==0)
+	  {
+	  var nd = new Date(utc+(3600000*0));
+	  console.log(nd);
+	  
+	  var currentDate = nd.toISOString().substring(0,10);
+	  var currentTime = nd.toISOString().substring(11,16);
+	  document.getElementById("date").value = currentDate;
+	  document.getElementById("time").value = currentTime;
+	  }
+
+function getLocation() {
+  if (navigator.geolocation) {
+	  console.log("okkkk")
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } 
+  else {console.log("not current loc")}
+}
+
+function showPosition(position) {
+console.log(position.coords.latitude);
+document.getElementById("latitude").value=position.coords.latitude;
+document.getElementById("longitude").value=position.coords.longitude;
+}
+
+
+function calculateSunAngle() {
+	  var latitude = parseFloat(document.getElementById("latitude").value);
+	  var longitude = parseFloat(document.getElementById("longitude").value);
+	  var date12 = new Date(document.getElementById("date").value + "T" + document.getElementById("time").value + ":00");
+	  
+	  var sunPosition = SunCalc.getPosition(date12, latitude, longitude);
+	  var altitude = sunPosition.altitude * 180 / Math.PI;
+	  var azimuth = sunPosition.azimuth * 180 / Math.PI;
+	  
+	  var resultDiv = document.getElementById("result");
+	  resultDiv.innerHTML = "Güneş Yerden Yükseklik Açısı: " + altitude.toFixed(2) + " derece";
+	  
+	  var resultDiv2 = document.getElementById("result2");
+	  resultDiv2.innerHTML ="Güneş Yön Açısı -> azimut=0 güney ise : " + azimuth.toFixed(2) + " derece";
+
+}
+ </script>
+
