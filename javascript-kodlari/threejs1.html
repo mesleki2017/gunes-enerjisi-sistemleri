@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Üç.js Basit Örnek Kodu</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.131.2/build/three.min.js"></script>
+    <script>
+      // Senaryo oluşturma
+      var scene = new THREE.Scene();
+
+      // Kamera oluşturma
+      var camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+
+      // Render motoru oluşturma
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Küp oluşturma
+      var geometry = new THREE.BoxGeometry();
+      var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      var cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      // Kamera pozisyonu ayarlama
+      camera.position.z = 5;
+
+      // Animasyon döngüsü
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html

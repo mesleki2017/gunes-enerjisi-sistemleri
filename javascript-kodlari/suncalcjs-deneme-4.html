@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<title>OpenLayers Simplest Example</title>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+<script src="https://unpkg.com/moment"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.7.12/two.js"></script>
+<link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
+<style>
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.cls1{
+flex:16%;
+border: 2px dotted;
+}
+.cls2{
+flex:16%;
+border: 2px dotted;
+}
+.cls3{
+flex:50%;
+border: 2px dotted;
+}
+
+</style>
+ <body>
+<div class="container">
+	<div class="cls1">
+	
+    <h1>Güneş Açısı Hesapla</h1>
+    <label>Enlem:</label> <input type="text" id="latitude"><br>
+    <label>Boylam:</label> <input type="text" id="longitude"><br>
+    <button onclick="getLocation()">Şuanki konumu al</button>
+    <p>Tarih ve Saat Bilgisi:</p>
+    <label>Tarih:</label> <input type="date" id="date"><br>
+    <label>Saat:</label> <input type="text" id="time"><br>
+    <br>
+    <button onclick="calculateSunAngle()">Hesapla</button>
+    </div>
+    <br>
+    <br>
+    <div class="cls2">
+    <div id="result1"></div><br>
+    <div id="result2"></div><br>
+    <div id="result3"></div>
+    </div>
+    <div class="cls3">
+	<div id="osm-map"></div>
+	</div>
+</div>
+ </body>
+ </html>
+<script>
+//http://worldtimeapi.org/api/timezone/Europe/Istanbul
+// 39.9508434082744, 32.89822335360895
+// Where you want to render the map.
+
+var currentDate12 = new Date();
+console.log(currentDate12);
+console.log("*****"+currentDate12.getTimezoneOffset());
+
+document.getElementById("date").value = currentDate12.toISOString().substring(0,10);; 
+document.getElementById("time").value = currentDate12.toISOString().substring(11,16);;
+
+function getLocation() {
+  if (navigator.geolocation) {
+	  console.log("okkkk")
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } 
+  else {console.log("not current loc")}
+}
+
+function showPosition(position) {
+console.log(position.coords.latitude);
+document.getElementById("latitude").value=position.coords.latitude;
+document.getElementById("longitude").value=position.coords.longitude;
+}
+var element = document.getElementById('osm-map');
+
+// Height has to be set. You can do this in CSS too.
+element.style = 'height:300px;';
+
+// Create Leaflet map on map element.
+var map = L.map(element);
+
+function calculateSunAngle() {
+	  var latitude = parseFloat(document.getElementById("latitude").value);
+	  var longitude = parseFloat(document.getElementById("longitude").value);
+	  var date12 = new Date(document.getElementById("date").value + "T" + document.getElementById("time").value + ":00");
+	  
+	  var sunPosition = SunCalc.getPosition(date12, latitude, longitude);
+	  var altitude = sunPosition.altitude * 180 / Math.PI;
+	  var azimuth = sunPosition.azimuth * 180 / Math.PI;
+	  
+	  var resultDiv1 = document.getElementById("result1");
+	  resultDiv1.innerHTML = "Güneş Yerden Yükseklik Açısı: " + altitude.toFixed(2) + " derece";
+	  
+	  var resultDiv2 = document.getElementById("result2");
+	  resultDiv2.innerHTML ="Güneş Yön Açısı: " + azimuth.toFixed(2) + " derece . Not: güney=0 batı=+90";
+
+
+
+// Add OSM tile layer to the Leaflet map.
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+// Target's GPS coordinates.
+var target = L.latLng(latitude, longitude);
+map.setView(target, 14);
+
+// Place a marker on the same location.
+L.marker(target).addTo(map);
+
+var ddd1=[latitude, longitude]
+var f1=(90-azimuth)+180;// azimuth 0 ı ne oldugunu bilmem gerekiyor. sanirim suncalc.js guney ı sifir kabul ediyor
+
+var resultDiv3 = document.getElementById("result3");
+resultDiv3.innerHTML="Güneş 360 derece cinsinden  konumu = "+f1.toFixed(2)+" derece";
+
+var ddd2=[latitude+Math.sin(f1* (Math.PI/180)), longitude+Math.cos(f1*(Math.PI/180))]
+
+var firstpolyline =L.polyline([ddd1,ddd2],{
+    color: '#ff0000',
+    weight: 3,
+    opacity: 0.5,
+    smoothFactor: 1
+});
+firstpolyline.addTo(map);
+
+}
+ </script>
+
