@@ -1,0 +1,117 @@
+
+<html>
+
+<head>
+    <title>shared webgl context by GroupGLLayer</title>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/maptalks/dist/maptalks.css">
+    <script type="text/javascript" src="https://unpkg.com/maptalks/dist/maptalks.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/three@0.104.0/build/three.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/maptalks.three@latest/dist/maptalks.three.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+        .pane{background:#34495e;line-height:28px;color:#fff;z-index:10;position:absolute;top:20px;right:20px}
+    </style>
+</head>
+
+<body>
+    <div id="map" class="container"></div>
+    <div class="pane"><a href="javascript:get100();">Get ID of 100</a></div>
+
+    <script>
+    var c = new maptalks.Coordinate(32.90068476143522,39.94846291727081);
+    var map = new maptalks.Map("map", {
+            center: c,
+            zoom: 16,
+            pitch: 60,
+            //bearing: 180,
+
+            centerCross: true,
+            doubleClickZoom: false,
+            baseLayer: new maptalks.TileLayer('tile', {
+                 urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                 subdomains: ['a', 'b', 'c', 'd'],
+                 attribution: '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>'
+             })
+        });
+
+var line = new maptalks.LineString([
+        c.add(0,0),
+        c.add(0.001,0.001),
+      ], {
+        symbol: {
+          'lineColor' : '#ff0000',
+          'lineWidth' : 3
+        }
+      });
+      var line2 = new maptalks.LineString([
+        c.add(0,0),
+        c.add(0.001,0.002),
+      ], {
+        symbol: {
+          'lineColor' : '#1bbc9b',
+          'lineWidth' : 3,
+          'textName'  : 'line',
+          'textPlacement' : 'line',
+            'textSize'  : 40,
+            'textDy' : 0,
+            "textColor":'#ff009b'
+        }
+      });
+      var polygon = new maptalks.Polygon([
+        c.add(0,0),
+        c.add(0,0.0006),
+        c.add(0.0006,0),
+
+      ], {
+        "symbol":[ {
+          'lineColor' : '#ff495e',
+          'lineWidth' : 20,
+          'polygonFill' : 'rgb(0,0,240)',
+          'polygonOpacity' : 0.5
+        }]
+      });
+      var circle = new maptalks.Circle(c, 50,{
+        symbol: {
+          lineColor: '#34495e',
+          lineWidth: 2,
+          polygonFill: '#ffbc9b',
+          polygonOpacity: 0.5
+        }
+      });
+      var rectangle = new maptalks.Rectangle(c, 80, 70, {
+        symbol: {
+          lineColor: '#34495e',
+          lineWidth: 2,
+          polygonFill: '#34495e',
+          polygonOpacity: 0.4
+        }
+      });
+var collection = new maptalks.GeometryCollection([line,line2, polygon,circle,rectangle]);
+
+var layer = new maptalks.VectorLayer('vector', collection).addTo(map);
+
+function get100() {
+  console.log("kjhkjhk")
+        getById(100);
+        
+      }
+function getById(id) {
+        layer.getGeometryById(id).updateSymbol([{ 'polygonFill': '#ff0000' }]);
+        console.log("kjhkjhk")
+      }
+
+
+    </script>
+   </body>
+   </html>

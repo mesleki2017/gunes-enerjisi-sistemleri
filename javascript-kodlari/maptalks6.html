@@ -1,0 +1,84 @@
+
+<html>
+
+<head>
+    <title>shared webgl context by GroupGLLayer</title>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/maptalks/dist/maptalks.css">
+    <script type="text/javascript" src="https://unpkg.com/maptalks/dist/maptalks.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/three@0.104.0/build/three.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/maptalks.three@latest/dist/maptalks.three.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+
+    var map = new maptalks.Map("map", {
+            center: [32.90068476143522,39.94846291727081],
+            zoom: 16,
+            pitch: 60,
+            //bearing: 180,
+
+            centerCross: true,
+            doubleClickZoom: false,
+            baseLayer: new maptalks.TileLayer('tile', {
+                 urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                 subdomains: ['a', 'b', 'c', 'd'],
+                 attribution: '&copy; <a href="http://osm.org">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/">CARTO</a>'
+             })
+        });
+     // the ThreeLayer to draw buildings
+        var threeLayer = new maptalks.ThreeLayer('threelayer', {
+            identifyCountOnEvent: 1,
+             forceRenderOnMoving: true,
+             forceRenderOnRotating: true
+        });
+        threeLayer.prepareToDraw = function (gl, scene, camera) {
+            var light = new THREE.DirectionalLight(0xffffff);
+            light.position.set(0, -10, 10).normalize();
+            scene.add(light);
+            scene.add(new THREE.AmbientLight('#fff', 0.5));
+            animate();
+            addPolygon();
+
+        };
+        threeLayer.addTo(map);
+
+
+        function addPolygon() {
+            const material = new THREE.MeshLambertMaterial({ color: '#fff', transparent: true });
+            const extrudePolygons = [];
+            const f = { "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [[[32.90068476143522,39.94846291727081], [32.9006847614300,39.94846291727070], [108.95908997865132, 34.21962188029219], [108.95886762567669, 34.21963481298575], [108.9588646064086, 34.219978885705856]]] }, "properties": { "name": "1-3cf0006e", "_color": "#4b3aff", "center": [108.95898078182817, 34.21980678460552] } };
+
+            const building = threeLayer.toExtrudePolygon(f, { height: 60 }, material);
+
+            //threeLayer.addMesh(building);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            threeLayer._needsUpdate = !threeLayer._needsUpdate;
+            if (threeLayer._needsUpdate && !threeLayer.isRendering()) {
+                threeLayer.redraw();
+            }
+
+        }
+
+
+    </script>
+   </body>
+   </html>
