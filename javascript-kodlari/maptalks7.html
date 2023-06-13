@@ -15,7 +15,7 @@
             width: 100%;
         }
 
-        #map {
+        #map1 {
             width: 100%;
             height: 100%;
             background-color: #000;
@@ -25,12 +25,12 @@
 </head>
 
 <body>
-    <div id="map" class="container"></div>
+    <div id="map1" ></div>
     <div class="pane"><a href="javascript:get100();">Get ID of 100</a></div>
 
     <script>
     var c = new maptalks.Coordinate(32.90068476143522,39.94846291727081);
-    var map = new maptalks.Map("map", {
+    var map = new maptalks.Map("map1", {
             center: c,
             zoom: 16,
             pitch: 60,
