@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet.js Example with Current Location, Marker, and Sun Circle</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+    
+
+	<script src="https://unpkg.com/leaflet-swoopy"></script>
+	<script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
+
+
+
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+        #currentLocationButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        #id2{
+		width: 100%;
+			}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <button id="currentLocationButton">Şuanki Konum</button>
+    <div id="id2">deneme</div>
+
+    <script>
+
+
+var map = new OSMBuildings({
+  container: 'map',
+  position: { latitude: 39.9484, longitude: 32.9006 },
+  zoom: 16,
+  minZoom: 15,
+  maxZoom: 20,
+  tilt: 40,
+  rotation: 300,
+  effects: ['shadows'],
+  attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> © Map <a href="https://mapbox.com/">Mapbox</a> © 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
+});
+
+
+
+
+let rotation = 0;
+
+function rotate () {
+  map.setRotation(rotation);
+  rotation = (rotation+1) % 360;
+  requestAnimationFrame(rotate);
+}
+    </script>
+</body>
+</html>

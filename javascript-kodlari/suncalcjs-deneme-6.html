@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>OpenLayers Simplest Example</title>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+    <script src="https://unpkg.com/moment"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.7.12/two.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/three@0.138.0/build/three.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/maptalks/dist/maptalks.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/maptalks.three/dist/maptalks.three.js"></script>
+    <link href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" rel="stylesheet"/>
+    <style>
+        .container11 {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        .cls1, .cls2, .cls3, .cls4 {
+            flex: 16%;
+            border: 2px dotted;
+        }
+        .cls4 {
+            flex: 100%;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="container11">
+    <div class="cls1">
+        <h1>Calculate Sun Angle</h1>
+        <label>Latitude:</label> <input type="text" id="latitude"><br>
+        <label>Longitude:</label> <input type="text" id="longitude"><br>
+        <button onclick="getLocation()">Get Current Location</button>
+        <p>Date and Time Information:</p>
+        <label>Date:</label> <input type="date" id="date"><br>
+        <label>Time:</label> <input type="text" id="time"><br>
+        <br>
+        <button onclick="calculateSunAngle()">Calculate</button>
+    </div>
+    <div class="cls2">
+        <div id="result1"></div><br>
+        <div id="result2"></div><br>
+        <div id="result3"></div>
+    </div>
+    <div class="cls3">
+        <div id="osm-map" style="height:300px;"></div>
+    </div>
+    <div class="cls4">
+        <div id="maptalk1" class="aaa"></div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+var currentDate = new Date();
+document.getElementById("date").value = currentDate.toISOString().substring(0, 10); 
+document.getElementById("time").value = currentDate.toISOString().substring(11, 16);
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, errorCallback, { timeout: 10000, enableHighAccuracy: true });
+    } else {
+        console.log("Geolocation is not supported in this browser.");
+    }
+}
+
+function errorCallback() {
+    console.log("Unable to retrieve current location.");
+}
+
+function showPosition(position) {
+    document.getElementById("latitude").value = position.coords.latitude;
+    document.getElementById("longitude").value = position.coords.longitude;
+}
+
+var map = L.map('osm-map');
+var maptalkMap;
+
+function initializeMaps() {
+    map = L.map('osm-map').setView([0, 0], 2);
+    maptalkMap = new maptalks.Map('maptalk1', {
+        center: [0, 0],
+        zoom: 2,
+        pitch: 60,
+        bearing: 180,
+        centerCross: true,
+        doubleClickZoom: false,
+        baseLayer: new maptalks.TileLayer('tile', {
+            urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            subdomains: ['a', 'b', 'c', 'd']
+        })
+    });
+}
+
+function calculateSunAngle() {
+    var latitude = parseFloat(document.getElementById("latitude").value);
+    var longitude = parseFloat(document.getElementById("longitude").value);
+    var date = new Date(document.getElementById("date").value + "T" + document.getElementById("time").value + ":00");
+
+    var sunPosition = SunCalc.getPosition(date, latitude, longitude);
+    var altitude = sunPosition.altitude * 180 / Math.PI;
+    var azimuth = sunPosition.azimuth * 180 / Math.PI;
+
+    document.getElementById("result1").innerHTML = "Sun Altitude Angle: " + altitude.toFixed(2) + " degrees";
+    document.getElementById("result2").innerHTML = "Sun Azimuth Angle: " + azimuth.toFixed(2) + " degrees. Note: South=0 West=+90";
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var target = L.latLng(latitude, longitude);
+    map.setView(target, 14);
+    L.marker(target).addTo(map);
+
+    var f1 = (90 - azimuth) + 180;
+    document.getElementById("result3").innerHTML = "Sun Position in 360 degrees: " + f1.toFixed(2) + " degrees";
+
+    var ddd1 = [latitude, longitude];
+    var ddd2 = [latitude + Math.sin(f1 * (Math.PI / 180)), longitude + Math.cos(f1 * (Math.PI / 180))];
+    
+    var firstpolyline = L.polyline([ddd1, ddd2], {
+        color: '#ff0000',
+        weight: 3,
+        opacity: 0.5,
+        smoothFactor: 1
+    });
+    firstpolyline.addTo(map);
+}
+
+initializeMaps();
+</script>

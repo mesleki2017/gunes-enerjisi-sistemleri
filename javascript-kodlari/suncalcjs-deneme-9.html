@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet.js Example with Current Location, Marker, and Sun Circle</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+    
+
+	<script src="https://unpkg.com/leaflet-swoopy"></script>
+	<script src="https://cdn.osmbuildings.org/4.1.1/OSMBuildings.js"></script>
+
+
+
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+        #currentLocationButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        #id2{
+		width: 100%;
+			}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <button id="currentLocationButton">Şuanki Konum</button>
+    <div id="id2">deneme</div>
+
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+		
+
+        var currentLocationMarker = null; // Şu anki konum işareti
+        var sunCircle = null; // Güneş çemberi
+         var sunriseMarker = null; // Güneşin doğuşu işareti
+		
+		
+        // Şuanki konuma git butonu işlevselliği
+        document.getElementById('currentLocationButton').addEventListener('click', function() {
+			
+			
+			const options = {
+					  enableHighAccuracy: true,
+					  timeout: 5000,
+					  maximumAge: 0,
+					};
+			navigator.geolocation.getCurrentPosition(success, error, options);
+			
+			function success(position) {
+                    var latlng = new L.LatLng(position.coords.latitude, position.coords.longitude);
+                    var latitude = position.coords.latitude.toFixed(6);
+                    var longitude = position.coords.longitude.toFixed(6);
+
+                    // Güneş açısı ve yüksekliğini hesapla
+                    var sunPosition = SunCalc.getPosition(new Date(), position.coords.latitude, position.coords.longitude);
+                    var sunAltitude = (sunPosition.altitude * 180 / Math.PI).toFixed(2);
+                    var sunAzimuth = (sunPosition.azimuth * 180 / Math.PI).toFixed(2);
+                    
+                    //var times = SunCalc.getTimes(new Date(), latitude, longitude);
+                    //var sunriseTime = times.sunrise.getHours() + ':' + times.sunrise.getMinutes();
+					// Güneş doğum  hesaplayın.
+					var sunriseTime = SunCalc.getTimes(new Date(), position.coords.latitude, position.coords.longitude).sunrise;
+					var sunrisePosition = SunCalc.getPosition(sunriseTime, latitude, longitude);
+					var sunriseAltitude = (sunrisePosition.altitude * 180 / Math.PI).toFixed(2);
+                    var sunriseAzimuth = (sunrisePosition.azimuth * 180 / Math.PI).toFixed(2);
+                    var ddd2 = [latitude + Math.sin((270-sunriseAzimuth) * (Math.PI / 180)), longitude + Math.cos((270-sunriseAzimuth) * (Math.PI / 180))];
+                    console.log("sunriseAzimuth "+sunriseAzimuth);
+					
+                    
+                    var popupContent = `
+						Enlem: ${latitude}<br>Boylam: ${longitude}
+						<br>Güneş Yüksekliği: ${sunAltitude} derece
+						<br>Güneş Açısı: ${sunAzimuth} derece
+						<br>Gün dogumu :${sunriseTime.getHours()+":"+sunriseTime.getMinutes()}
+						<br>Gün dogumu açı :${sunriseAzimuth}
+						<br>latlng :${latlng}
+						
+						`;
+					var popupContent2 ='aaa'
+
+                    // Önceki işareti ve güneş çemberini kaldır
+                    if (currentLocationMarker) {
+                        map.removeLayer(currentLocationMarker);
+                    }
+                    if (sunCircle) {
+                        map.removeLayer(sunCircle);
+                    }
+
+                    // Şu anki konumu işaretle
+                    currentLocationMarker = L.marker(latlng).addTo(map)
+                        .bindPopup(popupContent).openPopup();
+                    
+                    L.circle([latitude, longitude], {radius: 200}).addTo(map);
+
+                       
+                    // Konumu haritada göster
+                    map.setView(latlng, 13);   
+        };
+        function error(err) {console.warn(`ERROR(${err.code}): ${err.message}`);}
+        
+        });
+        
+
+
+		
+    </script>
+</body>
+</html>
